@@ -1,0 +1,19 @@
+{
+    "version": "1.0.0",
+    "summary": "API client library for working with https://anapioficeandfire.com/",
+    "repository": "https://github.com/ingara/elm-asoiaf-api.git",
+    "license": "BSD3",
+    "source-directories": [
+        "src"
+    ],
+    "exposed-modules": [
+        "Asoiaf.Api",
+        "Asoiaf.Models"
+    ],
+    "dependencies": {
+        "NoRedInk/elm-decode-pipeline": "1.1.2 <= v < 2.0.0",
+        "elm-lang/core": "4.0.1 <= v < 5.0.0",
+        "evancz/elm-http": "3.0.1 <= v < 4.0.0"
+    },
+    "elm-version": "0.17.0 <= v < 0.18.0"
+}
