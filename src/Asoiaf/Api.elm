@@ -21,12 +21,6 @@ module Asoiaf.Api
 
 {-|
 
-# Queries
-@docs CharacterQuery, HouseQuery, BookQuery, defaultCharacterQuery, defaultHouseQuery, defaultBookQuery
-
-# Pagination
-@docs Pagination, defaultPagination
-
 # Characters
 @docs getCharacters, getCharacter, queryCharacters
 
@@ -35,6 +29,12 @@ module Asoiaf.Api
 
 # Books
 @docs getBooks, getBook, queryBooks
+
+# Pagination
+@docs Pagination, defaultPagination
+
+# Queries
+@docs CharacterQuery, HouseQuery, BookQuery, defaultCharacterQuery, defaultHouseQuery, defaultBookQuery
 
 -}
 
