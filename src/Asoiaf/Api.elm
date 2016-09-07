@@ -152,7 +152,7 @@ defaultBookQuery =
 
 baseUrl : Models.Url
 baseUrl =
-    "http://www.anapioficeandfire.com/api"
+    "https://www.anapioficeandfire.com/api"
 
 
 charactersUrl : Models.Url
