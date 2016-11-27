@@ -38,8 +38,8 @@ module Asoiaf.Api
 
 -}
 
-import Task
 import Http
+import HttpBuilder
 import Date exposing (Date)
 import Json.Decode
 import Asoiaf.Models as Models
@@ -186,7 +186,7 @@ housesUrl =
       }
     queryCharacters pagination query == [ { name = "Jon Snow", ... } ]
 -}
-queryCharacters : Pagination -> CharacterQuery -> Task.Task Http.Error (List Models.Character)
+queryCharacters : Pagination -> CharacterQuery -> Http.Request (List Models.Character)
 queryCharacters pagination query =
     getMultiple Models.decodeCharacter charactersUrl pagination (Character query)
 
@@ -203,7 +203,7 @@ queryCharacters pagination query =
       }
     queryBooks pagination query == [ { name = "A Game of Thrones", ... } ]
 -}
-queryBooks : Pagination -> BookQuery -> Task.Task Http.Error (List Models.Book)
+queryBooks : Pagination -> BookQuery -> Http.Request (List Models.Book)
 queryBooks pagination query =
     getMultiple Models.decodeBook booksUrl pagination (Book query)
 
@@ -220,7 +220,7 @@ queryBooks pagination query =
       }
     queryHouses pagination query == [ { name = "House Stark of Winterfell", ... } ]
 -}
-queryHouses : Pagination -> HouseQuery -> Task.Task Http.Error (List Models.House)
+queryHouses : Pagination -> HouseQuery -> Http.Request (List Models.House)
 queryHouses pagination query =
     getMultiple Models.decodeHouse housesUrl pagination (House query)
 
@@ -231,42 +231,42 @@ queryHouses pagination query =
 
 {-| Get a list of characters
 -}
-getCharacters : Pagination -> Task.Task Http.Error (List Models.Character)
+getCharacters : Pagination -> Http.Request (List Models.Character)
 getCharacters pagination =
     queryCharacters pagination defaultCharacterQuery
 
 
 {-| Get a character by id
 -}
-getCharacter : Models.Id -> Task.Task Http.Error Models.Character
+getCharacter : Models.Id -> Http.Request Models.Character
 getCharacter id =
     getSingle Models.decodeCharacter charactersUrl id
 
 
 {-| Get a list of books
 -}
-getBooks : Pagination -> Task.Task Http.Error (List Models.Book)
+getBooks : Pagination -> Http.Request (List Models.Book)
 getBooks pagination =
     queryBooks pagination defaultBookQuery
 
 
 {-| Get a book by id
 -}
-getBook : Models.Id -> Task.Task Http.Error Models.Book
+getBook : Models.Id -> Http.Request Models.Book
 getBook id =
     getSingle Models.decodeBook booksUrl id
 
 
 {-| Get a list of houses
 -}
-getHouses : Pagination -> Task.Task Http.Error (List Models.House)
+getHouses : Pagination -> Http.Request (List Models.House)
 getHouses pagination =
     queryHouses pagination defaultHouseQuery
 
 
 {-| Get a house by id
 -}
-getHouse : Models.Id -> Task.Task Http.Error Models.House
+getHouse : Models.Id -> Http.Request Models.House
 getHouse id =
     getSingle Models.decodeHouse housesUrl id
 
@@ -321,7 +321,7 @@ queryToList query =
             ( a, b |> Maybe.withDefault "" )
     in
         queryList
-            |> List.filter (snd >> isJust)
+            |> List.filter (Tuple.second >> isJust)
             |> List.map sndWithDefault
 
 
@@ -332,21 +332,15 @@ paginationToList pagination =
     ]
 
 
-get : Json.Decode.Decoder a -> Models.Url -> Task.Task Http.Error a
-get decoder url =
-    Http.get decoder url
-
-
-getSingle : Json.Decode.Decoder a -> Models.Url -> Models.Id -> Task.Task Http.Error a
+getSingle : Json.Decode.Decoder a -> Models.Url -> Models.Id -> Http.Request a
 getSingle decoder url id =
-    get decoder (url ++ toString id)
+    Http.get (url ++ toString id) decoder
 
 
-getMultiple : Json.Decode.Decoder a -> Models.Url -> Pagination -> Query -> Task.Task Http.Error (List a)
+getMultiple : Json.Decode.Decoder a -> Models.Url -> Pagination -> Query -> Http.Request (List a)
 getMultiple decoder url pagination query =
     let
         queryParams =
             queryToList query ++ paginationToList pagination
     in
-        Http.url url queryParams
-            |> get (Json.Decode.list decoder)
+        Http.get (HttpBuilder.url url queryParams) (Json.Decode.list decoder)
